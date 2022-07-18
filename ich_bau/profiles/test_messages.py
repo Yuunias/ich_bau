@@ -1,7 +1,14 @@
+from tkinter import S
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.contrib.contenttypes.models import ContentType
+from django.test import TestCase, Client
+from django.db import connection, connections
+from django.urls import reverse_lazy
+from django.db import models
 
+
+from .views import *
 from .models import *
 from .messages import *
 from .notification_helper import *
@@ -9,6 +16,7 @@ from .notification_helper import *
 from django.conf import settings
 from django.core import mail
 
+TEST_USER_NAME_1 = 'USER_1'
 TEST_USER_NAME = 'USER'
 TEST_USER_PW = 'USER_PW'
 TEST_USER_EMAIL = 'email@mail.mail'
@@ -70,6 +78,7 @@ class Message_Test(TestCase):
         Send_Notification( test_user, test_user, user_type, 1, MSG_NOTIFY_TYPE_USER_WANT_JOIN_ID, 'Arg_MsgTxt', 'Arg_Url' )
         self.assertEqual( GetUserNoticationsQ( test_user, True).count(), 1 )
 
+    
     def test_Send_Notification_Check_Email_ASK_ACCEPT(self):
 
         mail.outbox = []
@@ -96,6 +105,68 @@ class Message_Test(TestCase):
         self.assertEqual( e_letter.subject, 'You are asked to accept the membership of \'test\' project team!' )
 
         self.assertIn( 'You are asked to accept the membership of &#39;test&#39; project team!', e_letter.body )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def test_Delete_Notification(self):
+        test_user = User.objects.create_user( username = TEST_USER_NAME_1, password = TEST_USER_PW )
+        user_type = ContentType.objects.get(app_label='auth', model='user')
+
+        self.assertEqual( GetUserNoticationsQ( test_user, True).count(), 0 )
+
+        Send_Notification( test_user, test_user, user_type, 1, MSG_NOTIFY_TYPE_USER_WANT_JOIN_ID, 'Arg_MsgTxt', 'Arg_Url' )
+
+        self.assertEqual( GetUserNoticationsQ( test_user, True).count(), 1 )
+
+        Notification.objects.filter( sender_user=test_user).update(readed_at=timezone.now())
+        print(Notification.objects.filter( sender_user=test_user).query)
+
+        self.assertEqual( GetUserNoticationsQ( test_user, False).count(), 1 )
+
+        c_a=Client()
+        c_a.login(username = TEST_USER_NAME_1, password = TEST_USER_PW)
+        c_a.get("/notifications/read_del/")
+        self.assertEqual( GetUserNoticationsQ( test_user, False).count(), 0 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def test_Send_Notification_Check_Email_TASK_ASSIGN(self):
 
