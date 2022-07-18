@@ -16,6 +16,8 @@ from django.conf import settings
 from django.core import mail
 
 TEST_USER_NAME_1 = 'USER_1'
+TEST_USER_NAME_2 = 'USER_2'
+TEST_USER_NAME_3 = 'USER_3'
 TEST_USER_NAME = 'USER'
 TEST_USER_PW = 'USER_PW'
 TEST_USER_EMAIL = 'email@mail.mail'
@@ -128,23 +130,39 @@ class Message_Test(TestCase):
 
 
     def test_Delete_Notification(self):
-        test_user = User.objects.create_user( username = TEST_USER_NAME_1, password = TEST_USER_PW )
+        test_user_1 = User.objects.create_user( username = TEST_USER_NAME_1, password = TEST_USER_PW )
+        test_user_2 = User.objects.create_user( username = TEST_USER_NAME_2, password = TEST_USER_PW )
+        test_user_3 = User.objects.create_user( username = TEST_USER_NAME_3, password = TEST_USER_PW )
         user_type = ContentType.objects.get(app_label='auth', model='user')
 
-        self.assertEqual( GetUserNoticationsQ( test_user, True).count(), 0 )
+        self.assertEqual( GetUserNoticationsQ( test_user_1, True).count(), 0 )
+        self.assertEqual( GetUserNoticationsQ( test_user_2, True).count(), 0 )
+        self.assertEqual( GetUserNoticationsQ( test_user_3, True).count(), 0 )
 
-        Send_Notification( test_user, test_user, user_type, 1, MSG_NOTIFY_TYPE_USER_WANT_JOIN_ID, 'Arg_MsgTxt', 'Arg_Url' )
+        Send_Notification( test_user_1, test_user_2, user_type, 1, MSG_NOTIFY_TYPE_USER_WANT_JOIN_ID, 'Arg_MsgTxt', 'Arg_Url' )
+        Send_Notification( test_user_3, test_user_2, user_type, 1, MSG_NOTIFY_TYPE_USER_WANT_JOIN_ID, 'Arg_MsgTxt', 'Arg_Url' )
+        Send_Notification( test_user_2, test_user_1, user_type, 1, MSG_NOTIFY_TYPE_USER_WANT_JOIN_ID, 'Arg_MsgTxt', 'Arg_Url' )
+        Send_Notification( test_user_3, test_user_1, user_type, 1, MSG_NOTIFY_TYPE_USER_WANT_JOIN_ID, 'Arg_MsgTxt', 'Arg_Url' )
 
-        self.assertEqual( GetUserNoticationsQ( test_user, True).count(), 1 )
+        self.assertEqual( GetUserNoticationsQ( test_user_1, True).count(), 2 )
 
-        Notification.objects.filter( sender_user=test_user).update(readed_at=timezone.now())
+        Notification.objects.filter( sender_user=test_user_2).update(readed_at=timezone.now())
+        Notification.objects.filter( sender_user=test_user_1).update(readed_at=timezone.now())
 
-        self.assertEqual( GetUserNoticationsQ( test_user, False).count(), 1 )
+        self.assertEqual( GetUserNoticationsQ( test_user_2, False).count(), 1 )
+        self.assertEqual( GetUserNoticationsQ( test_user_2, True).count(), 1 )  
+        self.assertEqual( GetUserNoticationsQ( test_user_1, True).count(), 1 )
+        self.assertEqual( GetUserNoticationsQ( test_user_1, False).count(), 1 )
 
         c_a=Client()
         c_a.login(username = TEST_USER_NAME_1, password = TEST_USER_PW)
-        c_a.get("/notifications/read_del/")
-        self.assertEqual( GetUserNoticationsQ( test_user, False).count(), 0 )
+        c_a.get("/notifications/read/read_del/")
+
+        self.assertEqual( GetUserNoticationsQ( test_user_1, True).count(), 1 )
+        self.assertEqual( GetUserNoticationsQ( test_user_1, False).count(), 0 )
+        self.assertEqual( GetUserNoticationsQ( test_user_2, False).count(), 1 )
+        self.assertEqual( GetUserNoticationsQ( test_user_2, True).count(), 1 )
+
 
 
 
