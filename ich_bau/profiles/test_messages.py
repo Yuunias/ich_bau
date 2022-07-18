@@ -166,20 +166,6 @@ class Message_Test(TestCase):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def test_Send_Notification_Check_Email_TASK_ASSIGN(self):
 
         mail.outbox = []
