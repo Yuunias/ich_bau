@@ -127,8 +127,6 @@ class Message_Test(TestCase):
 
 
 
-
-
     def test_Delete_Notification(self):
         test_user_1 = User.objects.create_user( username = TEST_USER_NAME_1, password = TEST_USER_PW )
         test_user_2 = User.objects.create_user( username = TEST_USER_NAME_2, password = TEST_USER_PW )
@@ -162,8 +160,6 @@ class Message_Test(TestCase):
         self.assertEqual( GetUserNoticationsQ( test_user_1, False).count(), 0 )
         self.assertEqual( GetUserNoticationsQ( test_user_2, False).count(), 1 )
         self.assertEqual( GetUserNoticationsQ( test_user_2, True).count(), 1 )
-
-
 
 
 
