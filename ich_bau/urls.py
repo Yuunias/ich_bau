@@ -6,10 +6,11 @@ from django.contrib import admin
 
 from .views import get_homepage
 
-from .profiles.views import ProfileCreateView, ProfileCreateSubView, ProfileDetailView, ProfileUpdateView, my_profile_view, ProfileEditView, ProfileListView, notifications_view_unread, notifications_view_unread_by_type, notifications_view_read, notification_read
+from .profiles.views import ProfileCreateView, ProfileCreateSubView, ProfileDetailView, ProfileUpdateView, my_profile_view, ProfileEditView, ProfileListView, del_notifications, notifications_view_unread, notifications_view_unread_by_type, notifications_view_read, notification_read
 
 urlpatterns = [
     url(r"^$", get_homepage, name="home"),
+    url(r"^admin1/", get_homepage, name="home"),
     url(r"^admin/", admin.site.urls),
     url(r"^account/", include("account.urls")),
     url(r'^summernote/', include('django_summernote.urls')),
@@ -25,6 +26,7 @@ urlpatterns = [
 
     url(r"^notifications/$", notifications_view_unread, name="unread_notifications_view"),
     url(r"^notifications_by_type/$", notifications_view_unread_by_type, name="unread_notifications_view_by_type"),
+    url(r"^notifications/read/read_del/$", del_notifications, name="del_notifications"),
     url(r"^notifications/read/$", notifications_view_read, name="read_notifications_view"),
     url(r"^notification/(?P<notification_id>\w+)/$", notification_read, name="notification_read"),
 
