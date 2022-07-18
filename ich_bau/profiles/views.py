@@ -202,7 +202,9 @@ def notifications_view_read(request):
 def del_notifications(request):
     n=request.user.id
     GetUserNoticationsQ( request.user, False ).delete()
+    messages.success(request, 'All old notifications have been deleted')
     return redirect("read_notifications_view")
+
 
 @login_required
 def notification_read( request, notification_id ):
