@@ -198,6 +198,11 @@ def notifications_view_unread_by_type(request):
 @login_required
 def notifications_view_read(request):
     return notifications_view_prepare( request, VIEW_NOTIFICATIONS_OLD )
+@login_required
+def del_notifications(request):
+    n=request.user.id
+    GetUserNoticationsQ( request.user, False ).delete()
+    return redirect("read_notifications_view")
 
 @login_required
 def notification_read( request, notification_id ):
