@@ -1,4 +1,3 @@
-from tkinter import S
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.contrib.contenttypes.models import ContentType
@@ -139,7 +138,6 @@ class Message_Test(TestCase):
         self.assertEqual( GetUserNoticationsQ( test_user, True).count(), 1 )
 
         Notification.objects.filter( sender_user=test_user).update(readed_at=timezone.now())
-        print(Notification.objects.filter( sender_user=test_user).query)
 
         self.assertEqual( GetUserNoticationsQ( test_user, False).count(), 1 )
 
